@@ -148,7 +148,7 @@ run for (-m), or how often they generate I/O (-M). If you, however, want more
 control over the exact characteristics of the jobs running in the system, you
 can use -l (lower-case L) or --jlist, which allows you to specify the exact
 set of jobs you wish to simulate. The list is of the form:
-x1,y1,z1:x2,y2,z2:... where x is the start time of the job, y is the run time
+x1,y1,z1:x2,y2,z2:... where x is the start time  lgof the job, y is the run time
 (i.e., how much CPU time it needs), and z the I/O frequency (i.e., after
 running z ms, the job issues an I/O; if z is 0, no I/Os are issued).
 
@@ -184,4 +184,8 @@ milliseconds or whatever you set it to with this flag.
 
 You can also play around with whether jobs that just complete an I/O are moved
 to the head of the queue they are in or to the back, with the -I flag. Check
-it out, it's fun! 
+it out, it's fun!
+
+## Action Items
+- Solve the problems from Multi-Level Feedback queue
+- Upload the answers as part of this `README.md`
