@@ -400,17 +400,17 @@ class ProgramGenerator:
         while n < self.num_actions:
             r = random.random()
             if r < self.fork_chance:
-                # print('fork')
+                print('fork')
                 self.add_fork_begin()
                 n += 1
             elif r < self.wait_chance:
-                # print('wait?')
+                print('wait?')
                 if self.need_wait[self.fork_level] > 0:
-                    # print('wait')
+                    print('wait')
                     self.add_wait()
                     n += 1
             else:    
-                # print('exit')
+                print('exit')
                 if self.fork_level > 0:
                     # must do all needed waits now
                     # self.add_fork_end()
