@@ -1,4 +1,3 @@
-
 This program, `mlfq.py`, allows you to see how the MLFQ scheduler
 presented in this chapter behaves. As before, you can use this to generate
 problems for yourself using random seeds, or use it to construct a
@@ -189,3 +188,90 @@ it out, it's fun!
 ## Action Items
 - Solve the problems from Multi-Level Feedback queue
 - Upload the answers as part of this `README.md`
+
+## Solutions to MLFQ Problems
+
+### 1. Basic MLFQ Operation
+Running a simple 3-job workload to understand basic MLFQ behavior:
+
+```sh
+./mlfq.py -j 3 -n 3 -q 10 -l 0,20,0:100,10,0:200,10,0 -c
+```
+
+This creates:
+- Job 0: Starts at t=0, runs for 20ms, no I/O
+- Job 1: Starts at t=100, runs for 10ms, no I/O  
+- Job 2: Starts at t=200, runs for 10ms, no I/O
+
+The scheduler uses 3 queues with quantum=10ms each. The jobs start at highest priority and move down queues when they use up their time slice.
+
+Results show:
+- Job 0 runs first, uses its quantum and moves down queues
+- Job 1 enters at t=100 at highest priority
+- Job 2 enters at t=200 at highest priority
+- Final turnaround times show priority-based scheduling working as expected
+
+### 2. Gaming the Scheduler
+To demonstrate gaming prevention:
+
+```sh
+./mlfq.py -j 2 -n 3 -q 10 -l 0,50,2:0,50,10 -c -i 4
+```
+
+This creates:
+- Job 0: Issues I/O every 2ms (gaming attempt)
+- Job 1: Issues I/O every 10ms (normal behavior)
+
+Without boost (-B 0):
+- Job 0 stays at high priority by doing frequent I/O
+- Job 1 gets poor service, demonstrating the gaming problem
+
+With boost (-B 50):
+- Jobs get periodically boosted to top queue
+- More fair scheduling results
+
+### 3. Priority Boost Impact
+
+```sh
+./mlfq.py -j 3 -n 3 -q 10 -l 0,100,0:50,50,0:100,10,1 -B 50 -c
+```
+
+Shows how priority boost helps prevent starvation:
+- Long-running jobs don't get stuck in lower queues
+- I/O-bound job maintains responsiveness
+- Boost interval of 50ms provides good balance
+
+### 4. Varying Time Slice Length
+
+```sh
+./mlfq.py -j 2 -n 3 -Q 10,20,40 -l 0,100,0:0,100,0 -c
+```
+
+Demonstrates impact of different quantum lengths:
+- Top queue: 10ms quantum for responsiveness
+- Middle queue: 20ms for balance
+- Bottom queue: 40ms for throughput
+- Results show better handling of mixed workloads
+
+### 5. I/O Behavior Analysis
+
+```sh
+./mlfq.py -j 3 -n 3 -q 10 -l 0,50,5:0,50,1:0,50,10 -i 5 -c
+```
+
+Shows how MLFQ handles different I/O patterns:
+- Job with medium I/O (every 5ms)
+- Job with frequent I/O (every 1ms)
+- Job with infrequent I/O (every 10ms)
+
+Results demonstrate:
+- I/O-bound jobs maintain high priority
+- CPU-bound jobs move to lower queues
+- Overall good balance of responsiveness and throughput
+
+These examples demonstrate key MLFQ principles:
+1. Multiple priority queues
+2. Priority boosting to prevent starvation
+3. Gaming prevention
+4. Handling of I/O-bound vs CPU-bound jobs
+5. Impact of quantum lengths on scheduling behavior
